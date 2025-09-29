@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleavage vs Crystal Habit - Enhanced Interactive Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            grid-template-rows: 80px 1fr 100px;
+            height: 100vh;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-left {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow-y: auto;
+        }
+
+        .main-content {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-right {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow-y: auto;
+        }
+
+        .controls {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+            font-size: 12px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(238, 90, 82, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .btn.secondary:hover {
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+
+        .lesson-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .lesson-section h3 {
+            margin-bottom: 10px;
+            color: #4ecdc4;
+        }
+
+        .quiz-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .quiz-question {
+            margin-bottom: 15px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-option {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .quiz-option.selected {
+            background: rgba(78, 205, 196, 0.3);
+            border: 1px solid #4ecdc4;
+        }
+
+        .quiz-option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4caf50;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .tutorial-step {
+            display: none;
+        }
+
+        .tutorial-step.active {
+            display: block;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: #4ecdc4;
+            transform: scale(1.2);
+        }
+
+        .mineral-info {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comparison-table th {
+            background: rgba(78, 205, 196, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Cleavage vs Crystal Habit - Enhanced Interactive Learning (7 Minerals)</h1>
+        </div>
+
+        <div class="sidebar-left">
+            <div class="lesson-section">
+                <h3>📚 Learning Objectives</h3>
+                <p>By the end of this tutorial, you will:</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Understand the difference between cleavage and crystal habit</li>
+                    <li>Identify cleavage planes in 3D mineral models</li>
+                    <li>Recognize various crystal habits</li>
+                    <li>Explore atomic structures and their relationship to cleavage</li>
+                    <li>Apply knowledge to real mineral identification</li>
+                </ul>
+            </div>
+
+            <div class="tutorial-step active" id="step-1">
+                <div class="lesson-section">
+                    <h3>🔍 What is Crystal Habit?</h3>
+                    <p><span class="highlight">Crystal habit</span> refers to the external shape and appearance of a crystal as it naturally forms.</p>
+                    <br>
+                    <p>Common habits include:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><strong>Cubic:</strong> Square-like shapes</li>
+                        <li><strong>Prismatic:</strong> Elongated crystals</li>
+                        <li><strong>Tabular:</strong> Flat, table-like</li>
+                        <li><strong>Acicular:</strong> Needle-like</li>
+                        <li><strong>Fibrous:</strong> Hair-like strands</li>
+                        <li><strong>Massive:</strong> No distinct crystal faces</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tutorial-step" id="step-2">
+                <div class="lesson-section">
+                    <h3>⚡ What is Cleavage?</h3>
+                    <p><span class="highlight">Cleavage</span> is the tendency of a mineral to break along specific planes of weakness in its crystal structure.</p>
+                    <br>
+                    <p>Key characteristics:</p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Produces flat, smooth surfaces</li>
+                        <li>Related to atomic structure</li>
+                        <li>Consistent direction regardless of crystal habit</li>
+                        <li>Can occur in 1, 2, 3, 4, or 6 directions</li>
+                        <li>Quality ranges from perfect to poor</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tutorial-step" id="step-3">
+                <div class="lesson-section">
+                    <h3>🔬 Key Differences</h3>
+                    <table class="comparison-table">
+                        <tr>
+                            <th></th>
+                            <th>Crystal Habit</th>
+                            <th>Cleavage</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Definition</strong></td>
+                            <td>External shape</td>
+                            <td>Breaking pattern</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Origin</strong></td>
+                            <td>Growth conditions</td>
+                            <td>Atomic structure</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Variability</strong></td>
+                            <td>Can vary</td>
+                            <td>Always consistent</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tutorial-step" id="step-4">
+                <div class="lesson-section">
+                    <h3>🎯 Practice Quiz</h3>
+                    <div class="quiz-question" id="quiz-1">
+                        <p><strong>Question 1:</strong> Which property is determined by the atomic structure?</p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-answer="incorrect">Crystal Habit</div>
+                            <div class="quiz-option" data-answer="correct">Cleavage</div>
+                            <div class="quiz-option" data-answer="incorrect">Both equally</div>
+                            <div class="quiz-option" data-answer="incorrect">Neither</div>
+                        </div>
+                        <div class="quiz-feedback" style="display: none; margin-top: 10px; padding: 10px; border-radius: 5px;"></div>
+                    </div>
+
+                    <div class="quiz-question" id="quiz-2" style="display: none;">
+                        <p><strong>Question 2:</strong> A mineral that breaks into thin, flat sheets most likely has:</p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-answer="incorrect">Cubic cleavage</div>
+                            <div class="quiz-option" data-answer="correct">Perfect cleavage in one direction</div>
+                            <div class="quiz-option" data-answer="incorrect">No cleavage</div>
+                            <div class="quiz-option" data-answer="incorrect">Octahedral cleavage</div>
+                        </div>
+                        <div class="quiz-feedback" style="display: none; margin-top: 10px; padding: 10px; border-radius: 5px;"></div>
+                    </div>
+
+                    <div class="quiz-question" id="quiz-3" style="display: none;">
+                        <p><strong>Question 3:</strong> Which mineral shows conchoidal fracture instead of cleavage?</p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-answer="incorrect">Halite</div>
+                            <div class="quiz-option" data-answer="correct">Quartz</div>
+                            <div class="quiz-option" data-answer="incorrect">Mica</div>
+                            <div class="quiz-option" data-answer="incorrect">Calcite</div>
+                        </div>
+                        <div class="quiz-feedback" style="display: none; margin-top: 10px; padding: 10px; border-radius: 5px;"></div>
+                    </div>
+
+                    <div class="quiz-progress">
+                        <p>Question <span id="current-quiz">1</span> of 3</p>
+                        <button class="btn" id="next-quiz" style="display: none; margin-top: 10px;">Next Question</button>
+                        <div id="final-score" style="display: none; margin-top: 15px; text-align: center;">
+                            <h4>Quiz Complete!</h4>
+                            <p>Your Score: <span id="final-score-display">0/3</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutorial-step" id="step-5">
+                <div class="lesson-section">
+                    <h3>🏆 Summary & Review</h3>
+                    <p><strong>Key Takeaways:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><span class="highlight">Crystal habit</span> = external shape (can vary)</li>
+                        <li><span class="highlight">Cleavage</span> = breaking pattern (always consistent)</li>
+                        <li>Cleavage is controlled by atomic structure</li>
+                        <li>Not all minerals have cleavage (some fracture instead)</li>
+                        <li>Cleavage quality ranges from perfect to poor</li>
+                        <li>Atomic bonds determine cleavage planes</li>
+                    </ul>
+
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(78, 205, 196, 0.2); border-radius: 8px;">
+                        <h4>🔬 Real-World Application</h4>
+                        <p>Understanding cleavage vs. crystal habit helps geologists:</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Identify unknown minerals in the field</li>
+                            <li>Predict how minerals will break during extraction</li>
+                            <li>Understand crystal structure relationships</li>
+                            <li>Distinguish between similar-looking minerals</li>
+                            <li>Design industrial applications based on mineral properties</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-indicator">
+                <div class="step-dot active" data-step="1"></div>
+                <div class="step-dot" data-step="2"></div>
+                <div class="step-dot" data-step="3"></div>
+                <div class="step-dot" data-step="4"></div>
+                <div class="step-dot" data-step="5"></div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="canvas-container"></div>
+        </div>
+
+        <div class="sidebar-right">
+            <div class="info-panel">
+                <h3>🔍 Current Mineral (<span id="mineral-counter">1/7</span>)</h3>
+                <div class="mineral-info">
+                    <p><strong>Name:</strong> <span id="mineral-name">Halite</span></p>
+                    <p><strong>Formula:</strong> <span id="mineral-formula">NaCl</span></p>
+                    <p><strong>Crystal System:</strong> <span id="crystal-system">Cubic</span></p>
+                    <p><strong>Habit:</strong> <span id="crystal-habit">Cubic</span></p>
+                    <p><strong>Cleavage:</strong> <span id="cleavage-info">Perfect {100} - 3 directions at 90°</span></p>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>🎮 Interactive Controls</h3>
+                <p><strong>Mouse:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Left click + drag: Rotate</li>
+                    <li>Right click + drag: Pan</li>
+                    <li>Scroll: Zoom</li>
+                </ul>
+                <br>
+                <p><strong>Keyboard:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Space: Break mineral</li>
+                    <li>R: Reset view</li>
+                    <li>H: Show/hide habit outline</li>
+                    <li>C: Show/hide cleavage planes</li>
+                    <li>A: Show/hide atomic structure</li>
+                    <li>Alt+← →: Navigate tutorial steps</li>
+                </ul>
+            </div>
+
+            <div class="info-panel">
+                <h3>📊 Learning Progress</h3>
+                <p>Step: <span id="current-step">1</span> of 5</p>
+                <p>Score: <span id="quiz-score">0</span>/3</p>
+                <p>Completion: <span id="completion-percent">20</span>%</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="prev-step">⬅️ Previous</button>
+            <button class="btn secondary" id="break-mineral">💥 Break Mineral</button>
+            <button class="btn secondary" id="reset-mineral">🔄 Reset</button>
+            <button class="btn secondary" id="change-mineral">🔀 Change Mineral</button>
+            <button class="btn secondary" id="toggle-cleavage">👁️ Toggle Cleavage</button>
+            <button class="btn secondary" id="toggle-habit">📐 Toggle Habit</button>
+            <button class="btn secondary" id="toggle-atomic">⚛️ Atomic View</button>
+            <button class="btn" id="next-step">Next ➡️</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let currentMineral, cleavagePlanes = [];
+        let mineralFragments = [];
+        let currentStep = 1;
+        let isBroken = false;
+        let showCleavagePlanes = false;
+        let showHabitOutline = false;
+        let showAtomicStructure = false;
+        let habitOutline = null;
+        let atomicStructure = null;
+        let atomicAtoms = [];
+        let atomicBonds = [];
+        let quizScore = 0;
+        let currentQuiz = 1;
+        let quizAnswered = [false, false, false];
+        let totalSteps = 5;
+
+        // Enhanced mineral database with 7 minerals
+        const minerals = {
+            halite: {
+                name: 'Halite',
+                formula: 'NaCl',
+                system: 'Cubic',
+                habit: 'Cubic',
+                cleavage: 'Perfect {100} - 3 directions at 90°',
+                color: 0x88ccff,
+                geometry: 'cube',
+                transparency: 0.8,
+                shininess: 100,
+                cleavagePlanes: [
+                    { normal: new THREE.Vector3(1, 0, 0), constant: 0, quality: 'perfect' },
+                    { normal: new THREE.Vector3(0, 1, 0), constant: 0, quality: 'perfect' },
+                    { normal: new THREE.Vector3(0, 0, 1), constant: 0, quality: 'perfect' }
+                ],
+                description: 'Halite shows perfect cubic cleavage - it breaks along three perpendicular planes.',
+                atomicStructure: {
+                    unitCell: 'cubic',
+                    latticeConstant: 2.0,
+                    atoms: [
+                        { element: 'Na', color: 0x9966ff, radius: 0.15, positions: [
+                            [0, 0, 0], [0.5, 0.5, 0], [0.5, 0, 0.5], [0, 0.5, 0.5]
+                        ]},
+                        { element: 'Cl', color: 0x00ff66, radius: 0.2, positions: [
+                            [0.5, 0, 0], [0, 0.5, 0], [0, 0, 0.5], [0.5, 0.5, 0.5]
+                        ]}
+                    ],
+                    bonds: [
+                        { from: [0, 0, 0], to: [0.5, 0, 0], strength: 'ionic' },
+                        { from: [0, 0, 0], to: [0, 0.5, 0], strength: 'ionic' },
+                        { from: [0, 0, 0], to: [0, 0, 0.5], strength: 'ionic' }
+                    ],
+                    weakPlanes: [
+                        { normal: [1, 0, 0], description: 'Weak ionic bonds between Na-Cl layers' },
+                        { normal: [0, 1, 0], description: 'Weak ionic bonds between Na-Cl layers' },
+                        { normal: [0, 0, 1], description: 'Weak ionic bonds between Na-Cl layers' }
+                    ],
+                    explanation: 'Ionic bonds are relatively weak in all directions, creating perfect cubic cleavage'
+                }
+            },
+            quartz: {
+                name: 'Quartz',
+                formula: 'SiO₂',
+                system: 'Hexagonal',
+                habit: 'Prismatic',
+                cleavage: 'None (conchoidal fracture)',
+                color: 0xffffff,
+                geometry: 'prism',
+                transparency: 0.7,
+                shininess: 150,
+                cleavagePlanes: [],
+                description: 'Quartz has no cleavage - it fractures in a curved, shell-like pattern.',
+                atomicStructure: {
+                    unitCell: 'hexagonal',
+                    latticeConstant: 2.0,
+                    atoms: [
+                        { element: 'Si', color: 0xffcc00, radius: 0.12, positions: [
+                            [0.3, 0.3, 0], [0.7, 0.7, 0.33], [0.3, 0.7, 0.67]
+                        ]},
+                        { element: 'O', color: 0xff4444, radius: 0.1, positions: [
+                            [0.4, 0.2, 0.1], [0.6, 0.8, 0.4], [0.2, 0.6, 0.7],
+                            [0.8, 0.4, 0.2], [0.5, 0.5, 0.5], [0.1, 0.9, 0.8]
+                        ]}
+                    ],
+                    bonds: [
+                        { from: [0.3, 0.3, 0], to: [0.4, 0.2, 0.1], strength: 'covalent' },
+                        { from: [0.3, 0.3, 0], to: [0.2, 0.6, 0.7], strength: 'covalent' },
+                        { from: [0.7, 0.7, 0.33], to: [0.6, 0.8, 0.4], strength: 'covalent' }
+                    ],
+                    weakPlanes: [],
+                    explanation: 'Strong covalent Si-O bonds in all directions prevent cleavage, causing characteristic conchoidal (shell-like) fracture instead'
+                }
+            },
+            mica: {
+                name: 'Muscovite',
+                formula: 'KAl₂(AlSi₃O₁₀)(OH)₂',
+                system: 'Monoclinic',
+                habit: 'Tabular',
+                cleavage: 'Perfect {001} - 1 direction',
+                color: 0x44aa44,
+                geometry: 'tabular',
+                transparency: 0.6,
+                shininess: 80,
+                cleavagePlanes: [
+                    { normal: new THREE.Vector3(0, 1, 0), constant: 0, quality: 'perfect' }
+                ],
+                description: 'Mica has perfect cleavage in one direction, creating thin flexible sheets.',
+                atomicStructure: {
+                    unitCell: 'monoclinic',
+                    latticeConstant: 2.0,
+                    atoms: [
+                        { element: 'K', color: 0xaa44ff, radius: 0.18, positions: [
+                            [0.5, 0, 0.5], [0.5, 1.0, 0.5]
+                        ]},
+                        { element: 'Al', color: 0xcccccc, radius: 0.12, positions: [
+                            [0.2, 0.3, 0.2], [0.8, 0.7, 0.8]
+                        ]},
+                        { element: 'Si', color: 0xffcc00, radius: 0.12, positions: [
+                            [0.1, 0.4, 0.1], [0.9, 0.6, 0.9], [0.3, 0.2, 0.3], [0.7, 0.8, 0.7]
+                        ]},
+                        { element: 'O', color: 0xff4444, radius: 0.1, positions: [
+                            [0.15, 0.35, 0.15], [0.85, 0.65, 0.85], [0.25, 0.25, 0.25], [0.75, 0.75, 0.75]
+                        ]}
+                    ],
+                    bonds: [
+                        { from: [0.1, 0.4, 0.1], to: [0.15, 0.35, 0.15], strength: 'covalent' },
+                        { from: [0.2, 0.3, 0.2], to: [0.15, 0.35, 0.15], strength: 'covalent' },
+                        { from: [0.5, 0, 0.5], to: [0.15, 0.35, 0.15], strength: 'weak' }
+                    ],
+                    weakPlanes: [
+                        { normal: [0, 1, 0], description: 'Weak van der Waals forces between K+ layers' }
+                    ],
+                    explanation: 'Weak bonds between potassium layers create perfect {001} cleavage'
+                }
+            },
+            fluorite: {
+                name: 'Fluorite',
+                formula: 'CaF₂',
+                system: 'Cubic',
+                habit: 'Cubic/Octahedral',
+                cleavage: 'Perfect {111} - 4 directions',
+                color: 0x9966ff,
+                geometry: 'octahedron',
+                transparency: 0.7,
+                shininess: 120,
+                cleavagePlanes: [
+                    { normal: new THREE.Vector3(1, 1, 1).normalize(), constant: 0, quality: 'perfect' },
+                    { normal: new THREE.Vector3(-1, 1, 1).normalize(), constant: 0, quality: 'perfect' },
+                    { normal: new THREE.Vector3(1, -1, 1).normalize(), constant: 0, quality: 'perfect' },
+                    { normal: new THREE.Vector3(1, 1, -1).normalize(), constant: 0, quality: 'perfect' }
+                ],
+                description: 'Fluorite shows perfect octahedral cleavage along four diagonal planes.',
+                atomicStructure: {
+                    unitCell: 'cubic',
+                    latticeConstant: 2.0,
+                    atoms: [
+                        { element: 'Ca', color: 0x00ff00, radius: 0.16, positions: [
+                            [0, 0, 0], [0.5, 0.5, 0], [0.5, 0, 0.5], [0, 0.5, 0.5]
+                        ]},
+                        { element: 'F', color: 0xffff00, radius: 0.11, positions: [
+                            [0.25, 0.25, 0.25], [0.75, 0.75, 0.25], [0.75, 0.25, 0.75], [0.25, 0.75, 0.75],
+                            [0.75, 0.25, 0.25], [0.25, 0.75, 0.25], [0.25, 0.25, 0.75], [0.75, 0.75, 0.75]
+                        ]}
+                    ],
+                    bonds: [
+                        { from: [0, 0, 0], to: [0.25, 0.25, 0.25], strength: 'ionic' },
+                        { from: [0, 0, 0], to: [0.75, 0.25, 0.25], strength: 'ionic' },
+                        { from: [0, 0, 0], to: [0.25, 0.75, 0.25], strength: 'ionic' }
+                    ],
+                    weakPlanes: [
+                        { normal: [1, 1, 1], description: 'Weak planes along octahedral faces' },
+                        { normal: [-1, 1, 1], description: 'Weak planes along octahedral faces' },
+                        { normal: [1, -1, 1], description: 'Weak planes along octahedral faces' },
+                        { normal: [1, 1, -1], description: 'Weak planes along octahedral faces' }
+                    ],
+                    explanation: 'Ca-F bonds are weaker along {111} octahedral planes'
+                }
+            },
+            calcite: {
+                name: 'Calcite',
+                formula: 'CaCO₃',
+                system: 'Hexagonal',
+                habit: 'Rhombohedral',
+                cleavage: 'Perfect {10ī1} - 3 directions',
+                color: 0xffffcc,
+                geometry: 'rhombohedron',
+                transparency: 0.8,
+                shininess: 90,
+                cleavagePlanes: [
+                    { normal: new THREE.Vector3(1, 0, -1).normalize(), constant: 0, quality: 'perfect' },
+                    { normal: new THREE.Vector3(-1, 1, 1).normalize(), constant: 0, quality: 'perfect' },
+                    { normal: new THREE.Vector3(0, -1, 1).normalize(), constant: 0, quality: 'perfect' }
+                ],
+                description: 'Calcite has perfect rhombohedral cleavage creating angled fragments.',
+                atomicStructure: {
+                    unitCell: 'hexagonal',
+                    latticeConstant: 2.0,
+                    atoms: [
+                        { element: 'Ca', color: 0x00ff00, radius: 0.16, positions: [
+                            [0, 0, 0], [0.33, 0.67, 0.25], [0.67, 0.33, 0.5]
+                        ]},
+                        { element: 'C', color: 0x444444, radius: 0.08, positions: [
+                            [0, 0, 0.25], [0.33, 0.67, 0.5], [0.67, 0.33, 0.75]
+                        ]},
+                        { element: 'O', color: 0xff4444, radius: 0.12, positions: [
+                            [0.1, 0.2, 0.25], [0.8, 0.1, 0.25], [0.2, 0.8, 0.25],
+                            [0.43, 0.87, 0.5], [0.13, 0.47, 0.5], [0.53, 0.13, 0.5],
+                            [0.77, 0.53, 0.75], [0.47, 0.77, 0.75], [0.87, 0.43, 0.75]
+                        ]}
+                    ],
+                    bonds: [
+                        { from: [0, 0, 0.25], to: [0.1, 0.2, 0.25], strength: 'covalent' },
+                        { from: [0, 0, 0.25], to: [0.8, 0.1, 0.25], strength: 'covalent' },
+                        { from: [0, 0, 0.25], to: [0.2, 0.8, 0.25], strength: 'covalent' },
+                        { from: [0, 0, 0], to: [0.1, 0.2, 0.25], strength: 'weak' }
+                    ],
+                    weakPlanes: [
+                        { normal: [1, 0, -1], description: 'Weak bonds between CO₃ layers' },
+                        { normal: [-1, 1, 1], description: 'Weak bonds between CO₃ layers' },
+                        { normal: [0, -1, 1], description: 'Weak bonds between CO₃ layers' }
+                    ],
+                    explanation: 'Strong covalent C-O bonds within CO₃ groups, weak ionic Ca-CO₃ bonds between layers create rhombohedral cleavage'
+                }
+            },
+            gypsum: {
+                name: 'Gypsum',
+                formula: 'CaSO₄·2H₂O',
+                system: 'Monoclinic',
+                habit: 'Tabular/Fibrous',
+                cleavage: 'Perfect {010} - 1 direction, Good {100} - 1 direction',
+                color: 0xfff8dc,
+                geometry: 'tabular',
+                transparency: 0.7,
+                shininess: 60,
+                cleavagePlanes: [
+                    { normal: new THREE.Vector3(0, 1, 0), constant: 0, quality: 'perfect' },
+                    { normal: new THREE.Vector3(1, 0, 0), constant: 0, quality: 'good' }
+                ],
+                description: 'Gypsum has perfect cleavage in one direction and good cleavage in another, forming flexible sheets.',
+                atomicStructure: {
+                    unitCell: 'monoclinic',
+                    latticeConstant: 2.0,
+                    atoms: [
+                        { element: 'Ca', color: 0x00ff00, radius: 0.16, positions: [
+                            [0, 0, 0], [0.5, 0.5, 0.5]
+                        ]},
+                        { element: 'S', color: 0xffff00, radius: 0.14, positions: [
+                            [0.25, 0.25, 0.25], [0.75, 0.75, 0.75]
+                        ]},
+                        { element: 'O', color: 0xff4444, radius: 0.12, positions: [
+                            [0.1, 0.3, 0.2], [0.4, 0.1, 0.3], [0.3, 0.4, 0.1], [0.2, 0.2, 0.4],
+                            [0.6, 0.8, 0.7], [0.9, 0.6, 0.8], [0.8, 0.9, 0.6], [0.7, 0.7, 0.9]
+                        ]},
+                        { element: 'H', color: 0xffffff, radius: 0.05, positions: [
+                            [0.05, 0.15, 0.35], [0.95, 0.85, 0.65], [0.15, 0.05, 0.45], [0.85, 0.95, 0.55]
+                        ]}
+                    ],
+                    bonds: [
+                        { from: [0.25, 0.25, 0.25], to: [0.1, 0.3, 0.2], strength: 'covalent' },
+                        { from: [0.25, 0.25, 0.25], to: [0.4, 0.1, 0.3], strength: 'covalent' },
+                        { from: [0, 0, 0], to: [0.1, 0.3, 0.2], strength: 'ionic' },
+                        { from: [0.05, 0.15, 0.35], to: [0.1, 0.3, 0.2], strength: 'weak' }
+                    ],
+                    weakPlanes: [
+                        { normal: [0, 1, 0], description: 'Weak hydrogen bonds between hydrated layers' },
+                        { normal: [1, 0, 0], description: 'Moderate bonds between SO₄ groups' }
+                    ],
+                    explanation: 'Water molecules between CaSO₄ layers create weak hydrogen bonds, resulting in perfect {010} cleavage'
+                }
+            },
+            pyrite: {
+                name: 'Pyrite',
+                formula: 'FeS₂',
+                system: 'Cubic',
+                habit: 'Cubic/Pyritohedral',
+                cleavage: 'Poor/None - tends to fracture',
+                color: 0xffd700,
+                geometry: 'cube',
+                transparency: 0.9,
+                shininess: 200,
+                cleavagePlanes: [],
+                description: 'Pyrite has very poor cleavage and tends to fracture irregularly due to strong metallic bonding.',
+                atomicStructure: {
+                    unitCell: 'cubic',
+                    latticeConstant: 2.0,
+                    atoms: [
+                        { element: 'Fe', color: 0xcc6600, radius: 0.18, positions: [
+                            [0, 0, 0], [0.5, 0.5, 0], [0.5, 0, 0.5], [0, 0.5, 0.5]
+                        ]},
+                        { element: 'S', color: 0xffff00, radius: 0.15, positions: [
+                            [0.3, 0.3, 0.3], [0.7, 0.7, 0.3], [0.7, 0.3, 0.7], [0.3, 0.7, 0.7],
+                            [0.7, 0.7, 0.7], [0.3, 0.3, 0.7], [0.3, 0.7, 0.3], [0.7, 0.3, 0.3]
+                        ]}
+                    ],
+                    bonds: [
+                        { from: [0, 0, 0], to: [0.3, 0.3, 0.3], strength: 'metallic' },
+                        { from: [0, 0, 0], to: [0.7, 0.3, 0.3], strength: 'metallic' },
+                        { from: [0.3, 0.3, 0.3], to: [0.7, 0.7, 0.3], strength: 'covalent' }
+                    ],
+                    weakPlanes: [],
+                    explanation: 'Strong metallic and covalent bonding in all directions prevents cleavage, causing irregular fracture instead'
+                }
+            }
+        };
+
+        let currentMineralKey = 'halite';
+        let mineralKeys = Object.keys(minerals);
+        let currentMineralIndex = 0;
+
+        // Initialize Three.js scene
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(5, 5, 5);
+            camera.lookAt(0, 0, 0);
+
+            // Create renderer
+            const container = document.getElementById('canvas-container');
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            // Add lights
+            setupLighting();
+
+            // Create initial mineral
+            createMineral();
+
+            // Add orbit controls
+            addOrbitControls();
+
+            // Add event listeners
+            addEventListeners();
+
+            // Start animation loop
+            animate();
+        }
+
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            // Directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+
+            // Point light for better illumination
+            const pointLight = new THREE.PointLight(0xffffff, 0.5);
+            pointLight.position.set(-10, -10, -5);
+            scene.add(pointLight);
+        }
+
+        function createMineral() {
+            // Remove existing mineral
+            if (currentMineral) {
+                scene.remove(currentMineral);
+            }
+
+            // Clear fragments
+            mineralFragments.forEach(fragment => scene.remove(fragment));
+            mineralFragments = [];
+
+            const mineral = minerals[currentMineralKey];
+            let geometry;
+
+            // Create geometry based on mineral type with more variety
+            switch (mineral.geometry) {
+                case 'cube':
+                    geometry = new THREE.BoxGeometry(2, 2, 2);
+                    break;
+                case 'prism':
+                    geometry = new THREE.CylinderGeometry(0.8, 0.8, 3, 6);
+                    break;
+                case 'tabular':
+                    geometry = new THREE.BoxGeometry(3, 0.5, 2);
+                    break;
+                case 'octahedron':
+                    geometry = new THREE.OctahedronGeometry(1.5);
+                    break;
+                case 'rhombohedron':
+                    // Create rhombohedron-like shape
+                    geometry = new THREE.BoxGeometry(2, 2, 2);
+                    // Apply transformation to make it look more rhombohedral
+                    geometry.applyMatrix4(new THREE.Matrix4().makeShear(0.3, 0, 0.2, 0, 0, 0));
+                    break;
+                default:
+                    geometry = new THREE.BoxGeometry(2, 2, 2);
+            }
+
+            // Enhanced material with mineral-specific properties
+            const material = new THREE.MeshPhongMaterial({
+                color: mineral.color,
+                transparent: true,
+                opacity: mineral.transparency || 0.8,
+                shininess: mineral.shininess || 100,
+                specular: new THREE.Color(0x444444)
+            });
+
+            currentMineral = new THREE.Mesh(geometry, material);
+            currentMineral.castShadow = true;
+            currentMineral.receiveShadow = true;
+            scene.add(currentMineral);
+
+            // Add wireframe overlay to show crystal structure
+            const wireframeGeometry = geometry.clone();
+            const wireframeMaterial = new THREE.WireframeGeometry(wireframeGeometry);
+            const wireframe = new THREE.LineSegments(wireframeMaterial, new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                opacity: 0.1,
+                transparent: true
+            }));
+            currentMineral.add(wireframe);
+
+            // Update UI
+            updateMineralInfo();
+
+            // Reset state
+            isBroken = false;
+            showCleavagePlanes = false;
+            showHabitOutline = false;
+            showAtomicStructure = false;
+            updateCleavagePlanes();
+            updateHabitOutline();
+            updateAtomicStructure();
+
+            // Add description to mineral info
+            updateMineralDescription();
+        }
+
+        function updateMineralInfo() {
+            const mineral = minerals[currentMineralKey];
+            document.getElementById('mineral-name').textContent = mineral.name;
+            document.getElementById('mineral-formula').textContent = mineral.formula;
+            document.getElementById('crystal-system').textContent = mineral.system;
+            document.getElementById('crystal-habit').textContent = mineral.habit;
+            document.getElementById('cleavage-info').textContent = mineral.cleavage;
+
+            // Update mineral counter
+            currentMineralIndex = mineralKeys.indexOf(currentMineralKey);
+            document.getElementById('mineral-counter').textContent = `${currentMineralIndex + 1}/${mineralKeys.length}`;
+        }
+
+        function updateMineralDescription() {
+            const mineral = minerals[currentMineralKey];
+            // Add or update description in the mineral info panel
+            let descriptionElement = document.querySelector('.mineral-description');
+            if (!descriptionElement) {
+                descriptionElement = document.createElement('p');
+                descriptionElement.className = 'mineral-description';
+                descriptionElement.style.marginTop = '10px';
+                descriptionElement.style.fontStyle = 'italic';
+                descriptionElement.style.color = '#4ecdc4';
+                document.querySelector('.mineral-info').appendChild(descriptionElement);
+            }
+            descriptionElement.textContent = mineral.description;
+        }
+
+        function addOrbitControls() {
+            // Simple orbit controls implementation
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            renderer.domElement.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.clientX - previousMousePosition.x,
+                        y: e.clientY - previousMousePosition.y
+                    };
+
+                    const deltaRotationQuaternion = new THREE.Quaternion()
+                        .setFromEuler(new THREE.Euler(
+                            toRadians(deltaMove.y * 0.5),
+                            toRadians(deltaMove.x * 0.5),
+                            0,
+                            'XYZ'
+                        ));
+
+                    currentMineral.quaternion.multiplyQuaternions(deltaRotationQuaternion, currentMineral.quaternion);
+
+                    previousMousePosition = { x: e.clientX, y: e.clientY };
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            renderer.domElement.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camera.position.multiplyScalar(1 + e.deltaY * 0.001);
+            });
+        }
+
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function breakMineral() {
+            if (isBroken) return;
+
+            const mineral = minerals[currentMineralKey];
+
+            // Handle minerals with no cleavage differently
+            if (mineral.cleavagePlanes.length === 0) {
+                createFractureFragments();
+            } else {
+                // Create fragments based on cleavage planes
+                createCleavageFragments(mineral.cleavagePlanes);
+            }
+
+            // Hide original mineral
+            currentMineral.visible = false;
+            isBroken = true;
+
+            // Add breaking sound effect simulation
+            simulateBreakingEffect();
+        }
+
+        function createCleavageFragments(cleavagePlanes) {
+            const mineral = minerals[currentMineralKey];
+            const numFragments = Math.pow(2, Math.min(cleavagePlanes.length, 3)); // Limit for performance
+
+            for (let i = 0; i < numFragments; i++) {
+                const fragment = currentMineral.clone();
+
+                // Scale fragments based on number of cleavage planes
+                const scale = 0.8 - (cleavagePlanes.length * 0.05);
+                fragment.scale.set(scale, scale, scale);
+                fragment.visible = true;
+
+                // Position fragments based on cleavage directions
+                const offset = new THREE.Vector3();
+
+                // Use cleavage plane normals to determine fragment positions
+                cleavagePlanes.forEach((plane, index) => {
+                    if (index < 3) { // Only use first 3 planes for positioning
+                        const direction = (i & (1 << index)) ? 1 : -1;
+                        offset.add(plane.normal.clone().multiplyScalar(direction * 0.6));
+                    }
+                });
+
+                fragment.position.copy(offset);
+
+                // Create realistic velocity based on cleavage direction
+                const velocity = offset.clone().normalize().multiplyScalar(0.03);
+                velocity.add(new THREE.Vector3(
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01,
+                    (Math.random() - 0.5) * 0.01
+                ));
+
+                fragment.userData = {
+                    originalPosition: fragment.position.clone(),
+                    velocity: velocity,
+                    rotationVelocity: {
+                        x: (Math.random() - 0.5) * 0.02,
+                        y: (Math.random() - 0.5) * 0.02,
+                        z: (Math.random() - 0.5) * 0.02
+                    },
+                    life: 1.0
+                };
+
+                scene.add(fragment);
+                mineralFragments.push(fragment);
+            }
+        }
+
+        function createFractureFragments() {
+            const mineral = minerals[currentMineralKey];
+
+            // Special conchoidal fracture for quartz
+            if (mineral.name === 'Quartz') {
+                createConchoidalFracture();
+            } else {
+                // Regular irregular fracture for other minerals (like pyrite)
+                createRegularFracture();
+            }
+        }
+
+        function createConchoidalFracture() {
+            // Create conchoidal (shell-like) fracture pattern for quartz
+            const numShells = 3; // Number of conchoidal shells
+            const fragmentsPerShell = 6;
+
+            for (let shell = 0; shell < numShells; shell++) {
+                const shellRadius = 0.8 + shell * 0.4;
+
+                for (let i = 0; i < fragmentsPerShell; i++) {
+                    const fragment = currentMineral.clone();
+
+                    // Create curved shell-like fragments
+                    const angle = (i / fragmentsPerShell) * Math.PI * 2;
+                    const shellHeight = Math.sin(shell * 0.8) * 0.5;
+
+                    // Position fragments in conchoidal pattern
+                    const offset = new THREE.Vector3(
+                        Math.cos(angle) * shellRadius,
+                        shellHeight + (Math.random() - 0.5) * 0.3,
+                        Math.sin(angle) * shellRadius
+                    );
+
+                    // Scale fragments to create shell-like appearance
+                    const baseScale = 0.3 + shell * 0.1;
+                    const scaleVariation = 0.8 + Math.random() * 0.4;
+                    fragment.scale.set(
+                        baseScale * scaleVariation,
+                        baseScale * 0.6, // Flatter for shell-like appearance
+                        baseScale * scaleVariation
+                    );
+
+                    fragment.visible = true;
+                    fragment.position.copy(offset);
+
+                    // Create curved velocity pattern
+                    const velocity = offset.clone().normalize().multiplyScalar(0.04);
+                    velocity.y += 0.01; // Slight upward curve
+
+                    // Add rotation to simulate tumbling
+                    fragment.userData = {
+                        originalPosition: fragment.position.clone(),
+                        velocity: velocity,
+                        rotationVelocity: {
+                            x: (Math.random() - 0.5) * 0.04,
+                            y: (Math.random() - 0.5) * 0.04,
+                            z: (Math.random() - 0.5) * 0.04
+                        },
+                        life: 1.0,
+                        isConchoidal: true,
+                        shellIndex: shell
+                    };
+
+                    scene.add(fragment);
+                    mineralFragments.push(fragment);
+                }
+            }
+
+            // Add conchoidal fracture visualization
+            createConchoidalVisualization();
+        }
+
+        function createConchoidalVisualization() {
+            // Create visible conchoidal fracture surfaces
+            for (let i = 0; i < 3; i++) {
+                const radius = 1.2 + i * 0.6;
+                const segments = 16;
+
+                // Create a hemisphere geometry for the conchoidal surface
+                const geometry = new THREE.SphereGeometry(radius, segments, segments/2);
+
+                // Create material that shows the fracture surface
+                const material = new THREE.MeshBasicMaterial({
+                    color: 0x88ddff,
+                    transparent: true,
+                    opacity: 0.2 - i * 0.05,
+                    side: THREE.DoubleSide,
+                    wireframe: false
+                });
+
+                const conchoidalSurface = new THREE.Mesh(geometry, material);
+                conchoidalSurface.position.set(0, 0, 0);
+
+                // Add slight animation to show the fracture propagation
+                conchoidalSurface.userData = {
+                    isConchoidalSurface: true,
+                    animationPhase: i * 0.5,
+                    originalOpacity: material.opacity
+                };
+
+                scene.add(conchoidalSurface);
+                mineralFragments.push(conchoidalSurface);
+            }
+
+            // Show conchoidal fracture information
+            showConchoidalInfo();
+        }
+
+        function showConchoidalInfo() {
+            let conchoidalInfo = document.getElementById('conchoidal-info');
+            if (!conchoidalInfo) {
+                conchoidalInfo = document.createElement('div');
+                conchoidalInfo.id = 'conchoidal-info';
+                conchoidalInfo.style.cssText = `
+                    position: absolute;
+                    bottom: 20px;
+                    right: 20px;
+                    background: rgba(136, 221, 255, 0.1);
+                    border: 2px solid #88ddff;
+                    border-radius: 10px;
+                    padding: 15px;
+                    color: #88ddff;
+                    font-weight: bold;
+                    text-align: left;
+                    backdrop-filter: blur(10px);
+                    z-index: 1000;
+                    max-width: 250px;
+                `;
+                document.querySelector('.main-content').appendChild(conchoidalInfo);
+            }
+
+            conchoidalInfo.innerHTML = `
+                <div>🐚 <strong>Conchoidal Fracture</strong></div>
+                <div style="font-size: 11px; margin: 8px 0;">
+                    <strong>Characteristics:</strong><br>
+                    • Curved, shell-like surfaces<br>
+                    • Smooth, glassy appearance<br>
+                    • No flat cleavage planes<br>
+                    • Typical of strong covalent bonds
+                </div>
+                <div style="font-size: 10px; margin-top: 8px; opacity: 0.8;">
+                    Blue surfaces show fracture pattern
+                </div>
+            `;
+            conchoidalInfo.style.display = 'block';
+
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                if (conchoidalInfo) {
+                    conchoidalInfo.style.display = 'none';
+                }
+            }, 8000);
+        }
+
+        function createRegularFracture() {
+            // Regular irregular fracture for non-quartz minerals
+            const numFragments = 8 + Math.floor(Math.random() * 6);
+
+            for (let i = 0; i < numFragments; i++) {
+                const fragment = currentMineral.clone();
+
+                // Random scaling for irregular fracture
+                const scale = 0.2 + Math.random() * 0.5;
+                fragment.scale.set(
+                    scale * (0.6 + Math.random() * 0.8),
+                    scale * (0.6 + Math.random() * 0.8),
+                    scale * (0.6 + Math.random() * 0.8)
+                );
+
+                fragment.visible = true;
+
+                // Random positioning for fracture pattern
+                const offset = new THREE.Vector3(
+                    (Math.random() - 0.5) * 3,
+                    (Math.random() - 0.5) * 3,
+                    (Math.random() - 0.5) * 3
+                );
+
+                fragment.position.copy(offset);
+
+                const velocity = offset.clone().normalize().multiplyScalar(0.05);
+
+                fragment.userData = {
+                    originalPosition: fragment.position.clone(),
+                    velocity: velocity,
+                    rotationVelocity: {
+                        x: (Math.random() - 0.5) * 0.06,
+                        y: (Math.random() - 0.5) * 0.06,
+                        z: (Math.random() - 0.5) * 0.06
+                    },
+                    life: 1.0
+                };
+
+                scene.add(fragment);
+                mineralFragments.push(fragment);
+            }
+        }
+
+        function simulateBreakingEffect() {
+            // Flash effect
+            const originalColor = currentMineral.material.color.clone();
+            currentMineral.material.color.setHex(0xffffff);
+
+            setTimeout(() => {
+                if (currentMineral && currentMineral.material) {
+                    currentMineral.material.color.copy(originalColor);
+                }
+            }, 100);
+        }
+
+        function animateFragments() {
+            mineralFragments.forEach((fragment, index) => {
+                if (fragment.userData.isConchoidalSurface) {
+                    // Special animation for conchoidal fracture surfaces
+                    fragment.userData.animationPhase += 0.02;
+                    const pulseValue = Math.sin(fragment.userData.animationPhase) * 0.1 + 0.9;
+                    fragment.material.opacity = fragment.userData.originalOpacity * pulseValue;
+
+                    // Slight expansion to show fracture propagation
+                    const expandValue = 1 + Math.sin(fragment.userData.animationPhase * 0.5) * 0.05;
+                    fragment.scale.set(expandValue, expandValue, expandValue);
+                } else if (fragment.userData.isConchoidal) {
+                    // Special animation for conchoidal fragments
+                    fragment.position.add(fragment.userData.velocity);
+
+                    // Curved trajectory for shell-like movement
+                    const time = Date.now() * 0.001;
+                    fragment.userData.velocity.y += Math.sin(time + index) * 0.0002;
+
+                    // Update rotation with shell-specific behavior
+                    fragment.rotation.x += fragment.userData.rotationVelocity.x;
+                    fragment.rotation.y += fragment.userData.rotationVelocity.y;
+                    fragment.rotation.z += fragment.userData.rotationVelocity.z;
+
+                    // Apply gentle gravity
+                    fragment.userData.velocity.y -= 0.0005;
+
+                    // Less damping for more realistic shell movement
+                    fragment.userData.velocity.multiplyScalar(0.998);
+
+                    // Fade over time
+                    fragment.userData.life -= 0.003;
+                    if (fragment.material) {
+                        fragment.material.opacity = Math.max(0, fragment.userData.life * 0.9);
+                    }
+                } else {
+                    // Regular fragment animation
+                    fragment.position.add(fragment.userData.velocity);
+
+                    // Update rotation
+                    fragment.rotation.x += fragment.userData.rotationVelocity.x;
+                    fragment.rotation.y += fragment.userData.rotationVelocity.y;
+                    fragment.rotation.z += fragment.userData.rotationVelocity.z;
+
+                    // Apply gravity
+                    fragment.userData.velocity.y -= 0.001;
+
+                    // Damping
+                    fragment.userData.velocity.multiplyScalar(0.995);
+
+                    // Fade over time
+                    fragment.userData.life -= 0.005;
+                    if (fragment.material) {
+                        fragment.material.opacity = Math.max(0, fragment.userData.life * 0.8);
+                    }
+                }
+            });
+        }
+
+        function resetMineral() {
+            // Show original mineral
+            if (currentMineral) {
+                currentMineral.visible = true;
+            }
+
+            // Remove fragments
+            mineralFragments.forEach(fragment => scene.remove(fragment));
+            mineralFragments = [];
+
+            isBroken = false;
+        }
+
+        function toggleCleavagePlanes() {
+            showCleavagePlanes = !showCleavagePlanes;
+            updateCleavagePlanes();
+        }
+
+        function updateCleavagePlanes() {
+            // Remove existing cleavage planes
+            cleavagePlanes.forEach(plane => scene.remove(plane));
+            cleavagePlanes = [];
+
+            if (showCleavagePlanes && !isBroken) {
+                const mineral = minerals[currentMineralKey];
+                mineral.cleavagePlanes.forEach(planeData => {
+                    const planeGeometry = new THREE.PlaneGeometry(4, 4);
+                    let planeColor = 0xff4444;
+                    let planeOpacity = 0.3;
+
+                    // Different colors for different cleavage qualities
+                    if (planeData.quality === 'perfect') {
+                        planeColor = 0xff0000;
+                        planeOpacity = 0.4;
+                    } else if (planeData.quality === 'good') {
+                        planeColor = 0xff8800;
+                        planeOpacity = 0.3;
+                    } else if (planeData.quality === 'poor') {
+                        planeColor = 0xffff00;
+                        planeOpacity = 0.2;
+                    }
+
+                    const planeMaterial = new THREE.MeshBasicMaterial({
+                        color: planeColor,
+                        transparent: true,
+                        opacity: planeOpacity,
+                        side: THREE.DoubleSide
+                    });
+
+                    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+
+                    // Orient plane based on normal vector
+                    plane.lookAt(planeData.normal);
+
+                    scene.add(plane);
+                    cleavagePlanes.push(plane);
+                });
+            }
+        }
+
+        function toggleHabitOutline() {
+            showHabitOutline = !showHabitOutline;
+            updateHabitOutline();
+        }
+
+        function updateHabitOutline() {
+            // Remove existing habit outline
+            if (habitOutline) {
+                scene.remove(habitOutline);
+                habitOutline = null;
+            }
+
+            if (showHabitOutline && !isBroken && currentMineral) {
+                const mineral = minerals[currentMineralKey];
+                let outlineGeometry;
+
+                // Create outline geometry based on mineral habit
+                switch (mineral.geometry) {
+                    case 'cube':
+                        outlineGeometry = new THREE.BoxGeometry(2.2, 2.2, 2.2);
+                        break;
+                    case 'prism':
+                        outlineGeometry = new THREE.CylinderGeometry(1.0, 1.0, 3.2, 6);
+                        break;
+                    case 'tabular':
+                        outlineGeometry = new THREE.BoxGeometry(3.2, 0.7, 2.2);
+                        break;
+                    case 'octahedron':
+                        outlineGeometry = new THREE.OctahedronGeometry(1.7);
+                        break;
+                    case 'rhombohedron':
+                        outlineGeometry = new THREE.BoxGeometry(2.2, 2.2, 2.2);
+                        outlineGeometry.applyMatrix4(new THREE.Matrix4().makeShear(0.3, 0, 0.2, 0, 0, 0));
+                        break;
+                    default:
+                        outlineGeometry = new THREE.BoxGeometry(2.2, 2.2, 2.2);
+                }
+
+                // Create wireframe outline with enhanced visibility
+                const outlineWireframe = new THREE.WireframeGeometry(outlineGeometry);
+                const outlineMaterial = new THREE.LineBasicMaterial({
+                    color: 0x00ff88,
+                    linewidth: 3,
+                    opacity: 0.8,
+                    transparent: true
+                });
+
+                habitOutline = new THREE.LineSegments(outlineWireframe, outlineMaterial);
+
+                // Add pulsing animation effect
+                habitOutline.userData = {
+                    originalOpacity: 0.8,
+                    pulsePhase: 0
+                };
+
+                scene.add(habitOutline);
+
+                // Add habit information overlay
+                showHabitInfo();
+            } else {
+                hideHabitInfo();
+            }
+        }
+
+        function showHabitInfo() {
+            const mineral = minerals[currentMineralKey];
+
+            // Create or update habit info element
+            let habitInfo = document.getElementById('habit-info');
+            if (!habitInfo) {
+                habitInfo = document.createElement('div');
+                habitInfo.id = 'habit-info';
+                habitInfo.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(0, 255, 136, 0.1);
+                    border: 2px solid #00ff88;
+                    border-radius: 10px;
+                    padding: 15px;
+                    color: #00ff88;
+                    font-weight: bold;
+                    text-align: center;
+                    backdrop-filter: blur(10px);
+                    z-index: 1000;
+                `;
+                document.querySelector('.main-content').appendChild(habitInfo);
+            }
+
+            habitInfo.innerHTML = `
+                <div>🔍 <strong>Crystal Habit: ${mineral.habit}</strong></div>
+                <div style="font-size: 12px; margin-top: 5px; opacity: 0.8;">
+                    This outline shows the typical external form of ${mineral.name}
+                </div>
+            `;
+            habitInfo.style.display = 'block';
+        }
+
+        function hideHabitInfo() {
+            const habitInfo = document.getElementById('habit-info');
+            if (habitInfo) {
+                habitInfo.style.display = 'none';
+            }
+        }
+
+        function toggleAtomicStructure() {
+            showAtomicStructure = !showAtomicStructure;
+            updateAtomicStructure();
+        }
+
+        function updateAtomicStructure() {
+            // Remove existing atomic structure
+            if (atomicStructure) {
+                scene.remove(atomicStructure);
+                atomicStructure = null;
+            }
+
+            // Clear atomic components
+            atomicAtoms.forEach(atom => scene.remove(atom));
+            atomicBonds.forEach(bond => scene.remove(bond));
+            atomicAtoms = [];
+            atomicBonds = [];
+
+            if (showAtomicStructure && !isBroken && currentMineral) {
+                createAtomicStructure();
+                showAtomicInfo();
+            } else {
+                hideAtomicInfo();
+            }
+        }
+
+        function createAtomicStructure() {
+            const mineral = minerals[currentMineralKey];
+            const atomicData = mineral.atomicStructure;
+
+            if (!atomicData) return;
+
+            // Create group for atomic structure
+            atomicStructure = new THREE.Group();
+
+            // Scale factor for atomic structure
+            const scale = 3.0;
+
+            // Create atoms
+            atomicData.atoms.forEach(atomType => {
+                atomType.positions.forEach(pos => {
+                    // Create multiple unit cells for better visualization
+                    for (let x = -1; x <= 1; x++) {
+                        for (let y = -1; y <= 1; y++) {
+                            for (let z = -1; z <= 1; z++) {
+                                const atomGeometry = new THREE.SphereGeometry(atomType.radius, 16, 16);
+                                const atomMaterial = new THREE.MeshPhongMaterial({
+                                    color: atomType.color,
+                                    transparent: true,
+                                    opacity: 0.8,
+                                    shininess: 100
+                                });
+
+                                const atom = new THREE.Mesh(atomGeometry, atomMaterial);
+                                atom.position.set(
+                                    (pos[0] + x) * scale,
+                                    (pos[1] + y) * scale,
+                                    (pos[2] + z) * scale
+                                );
+
+                                // Add element label
+                                atom.userData = {
+                                    element: atomType.element,
+                                    isAtom: true
+                                };
+
+                                atomicStructure.add(atom);
+                                atomicAtoms.push(atom);
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Create bonds
+            if (atomicData.bonds) {
+                atomicData.bonds.forEach(bondData => {
+                    for (let x = -1; x <= 1; x++) {
+                        for (let y = -1; y <= 1; y++) {
+                            for (let z = -1; z <= 1; z++) {
+                                const startPos = new THREE.Vector3(
+                                    (bondData.from[0] + x) * scale,
+                                    (bondData.from[1] + y) * scale,
+                                    (bondData.from[2] + z) * scale
+                                );
+                                const endPos = new THREE.Vector3(
+                                    (bondData.to[0] + x) * scale,
+                                    (bondData.to[1] + y) * scale,
+                                    (bondData.to[2] + z) * scale
+                                );
+
+                                const bondGeometry = new THREE.CylinderGeometry(0.02, 0.02, startPos.distanceTo(endPos), 8);
+                                let bondColor = 0xffffff;
+
+                                // Color bonds by strength
+                                switch (bondData.strength) {
+                                    case 'covalent':
+                                        bondColor = 0x00ff00;
+                                        break;
+                                    case 'ionic':
+                                        bondColor = 0x0088ff;
+                                        break;
+                                    case 'metallic':
+                                        bondColor = 0xffd700;
+                                        break;
+                                    case 'weak':
+                                        bondColor = 0xff8800;
+                                        break;
+                                }
+
+                                const bondMaterial = new THREE.MeshBasicMaterial({
+                                    color: bondColor,
+                                    transparent: true,
+                                    opacity: 0.6
+                                });
+
+                                const bond = new THREE.Mesh(bondGeometry, bondMaterial);
+
+                                // Position and orient bond
+                                bond.position.copy(startPos.clone().add(endPos).multiplyScalar(0.5));
+                                bond.lookAt(endPos);
+                                bond.rotateX(Math.PI / 2);
+
+                                bond.userData = {
+                                    strength: bondData.strength,
+                                    isBond: true
+                                };
+
+                                atomicStructure.add(bond);
+                                atomicBonds.push(bond);
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Add weak plane indicators
+            if (atomicData.weakPlanes) {
+                atomicData.weakPlanes.forEach(plane => {
+                    const planeGeometry = new THREE.PlaneGeometry(6, 6);
+                    const planeMaterial = new THREE.MeshBasicMaterial({
+                        color: 0xff0000,
+                        transparent: true,
+                        opacity: 0.15,
+                        side: THREE.DoubleSide
+                    });
+
+                    const weakPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+
+                    // Orient plane based on normal
+                    const normal = new THREE.Vector3(plane.normal[0], plane.normal[1], plane.normal[2]);
+                    weakPlane.lookAt(normal);
+
+                    weakPlane.userData = {
+                        isWeakPlane: true,
+                        description: plane.description
+                    };
+
+                    atomicStructure.add(weakPlane);
+                });
+            }
+
+            // Make mineral semi-transparent when showing atomic structure
+            if (currentMineral) {
+                currentMineral.material.opacity = 0.2;
+            }
+
+            scene.add(atomicStructure);
+        }
+
+        function showAtomicInfo() {
+            const mineral = minerals[currentMineralKey];
+            const atomicData = mineral.atomicStructure;
+
+            // Create or update atomic info element
+            let atomicInfo = document.getElementById('atomic-info');
+            if (!atomicInfo) {
+                atomicInfo = document.createElement('div');
+                atomicInfo.id = 'atomic-info';
+                atomicInfo.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    left: 20px;
+                    background: rgba(0, 136, 255, 0.1);
+                    border: 2px solid #0088ff;
+                    border-radius: 10px;
+                    padding: 15px;
+                    color: #0088ff;
+                    font-weight: bold;
+                    text-align: left;
+                    backdrop-filter: blur(10px);
+                    z-index: 1000;
+                    max-width: 300px;
+                `;
+                document.querySelector('.main-content').appendChild(atomicInfo);
+            }
+
+            let atomicContent = `
+                <div>⚛️ <strong>Atomic Structure: ${mineral.name}</strong></div>
+                <div style="font-size: 12px; margin: 8px 0;">
+                    Unit Cell: ${atomicData.unitCell}
+                </div>
+            `;
+
+            // Add atom legend
+            atomicContent += '<div style="font-size: 11px; margin: 5px 0;"><strong>Atoms:</strong></div>';
+            atomicData.atoms.forEach(atomType => {
+                atomicContent += `
+                    <div style="font-size: 10px; margin: 2px 0;">
+                        <span style="display: inline-block; width: 10px; height: 10px; background: #${atomType.color.toString(16).padStart(6, '0')}; border-radius: 50%; margin-right: 5px;"></span>
+                        ${atomType.element}
+                    </div>
+                `;
+            });
+
+            // Add bond legend with new metallic bonds
+            atomicContent += '<div style="font-size: 11px; margin: 8px 0 5px 0;"><strong>Bonds:</strong></div>';
+            atomicContent += `
+                <div style="font-size: 10px; margin: 2px 0;">
+                    <span style="display: inline-block; width: 15px; height: 2px; background: #00ff00; margin-right: 5px;"></span>
+                    Covalent (strong)
+                </div>
+                <div style="font-size: 10px; margin: 2px 0;">
+                    <span style="display: inline-block; width: 15px; height: 2px; background: #0088ff; margin-right: 5px;"></span>
+                    Ionic (medium)
+                </div>
+                <div style="font-size: 10px; margin: 2px 0;">
+                    <span style="display: inline-block; width: 15px; height: 2px; background: #ffd700; margin-right: 5px;"></span>
+                    Metallic (strong)
+                </div>
+                <div style="font-size: 10px; margin: 2px 0;">
+                    <span style="display: inline-block; width: 15px; height: 2px; background: #ff8800; margin-right: 5px;"></span>
+                    Weak bonds
+                </div>
+            `;
+
+            // Add cleavage explanation
+            if (atomicData.explanation) {
+                atomicContent += `
+                    <div style="font-size: 10px; margin-top: 10px; padding: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 5px;">
+                        <strong>Cleavage Connection:</strong><br>
+                        ${atomicData.explanation}
+                    </div>
+                `;
+            }
+
+            atomicInfo.innerHTML = atomicContent;
+            atomicInfo.style.display = 'block';
+        }
+
+        function hideAtomicInfo() {
+            const atomicInfo = document.getElementById('atomic-info');
+            if (atomicInfo) {
+                atomicInfo.style.display = 'none';
+            }
+
+            // Restore mineral opacity
+            if (currentMineral && currentMineral.material) {
+                const mineral = minerals[currentMineralKey];
+                currentMineral.material.opacity = mineral.transparency || 0.8;
+            }
+        }
+
+        function changeMineral() {
+            currentMineralIndex = (currentMineralIndex + 1) % mineralKeys.length;
+            currentMineralKey = mineralKeys[currentMineralIndex];
+            createMineral();
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                document.querySelector(`#step-${currentStep}`).classList.remove('active');
+                document.querySelector(`.step-dot[data-step="${currentStep}"]`).classList.remove('active');
+
+                currentStep++;
+
+                document.querySelector(`#step-${currentStep}`).classList.add('active');
+                document.querySelector(`.step-dot[data-step="${currentStep}"]`).classList.add('active');
+
+                updateProgress();
+                document.getElementById('current-step').textContent = currentStep;
+
+                // Reset quiz state when entering quiz step
+                if (currentStep === 4) {
+                    resetQuiz();
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                document.querySelector(`#step-${currentStep}`).classList.remove('active');
+                document.querySelector(`.step-dot[data-step="${currentStep}"]`).classList.remove('active');
+
+                currentStep--;
+
+                document.querySelector(`#step-${currentStep}`).classList.add('active');
+                document.querySelector(`.step-dot[data-step="${currentStep}"]`).classList.add('active');
+
+                updateProgress();
+                document.getElementById('current-step').textContent = currentStep;
+            }
+        }
+
+        function updateProgress() {
+            const progressPercentage = (currentStep / totalSteps) * 100;
+            document.getElementById('progress').style.width = progressPercentage + '%';
+            document.getElementById('completion-percent').textContent = Math.round(progressPercentage);
+        }
+
+        function resetQuiz() {
+            currentQuiz = 1;
+            quizScore = 0;
+            quizAnswered = [false, false, false];
+
+            // Show first quiz question
+            document.getElementById('quiz-1').style.display = 'block';
+            document.getElementById('quiz-2').style.display = 'none';
+            document.getElementById('quiz-3').style.display = 'none';
+            document.getElementById('final-score').style.display = 'none';
+            document.getElementById('next-quiz').style.display = 'none';
+            document.getElementById('current-quiz').textContent = '1';
+
+            // Reset all quiz options
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            // Hide all feedback
+            document.querySelectorAll('.quiz-feedback').forEach(feedback => {
+                feedback.style.display = 'none';
+            });
+
+            updateScoreDisplay();
+        }
+
+        function nextQuizQuestion() {
+            if (currentQuiz < 3) {
+                // Hide current question
+                document.getElementById(`quiz-${currentQuiz}`).style.display = 'none';
+                currentQuiz++;
+
+                // Show next question
+                document.getElementById(`quiz-${currentQuiz}`).style.display = 'block';
+                document.getElementById('current-quiz').textContent = currentQuiz;
+                document.getElementById('next-quiz').style.display = 'none';
+            } else {
+                // Show final score
+                document.getElementById('quiz-3').style.display = 'none';
+                document.getElementById('final-score').style.display = 'block';
+                document.getElementById('final-score-display').textContent = `${quizScore}/3`;
+
+                // Enable next step if quiz is complete
+                if (currentStep === 4) {
+                    // Auto advance to summary step after quiz completion
+                    setTimeout(() => {
+                        nextStep();
+                    }, 2000);
+                }
+            }
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('quiz-score').textContent = quizScore;
+        }
+
+        function addEventListeners() {
+            // Button event listeners
+            document.getElementById('break-mineral').addEventListener('click', breakMineral);
+            document.getElementById('reset-mineral').addEventListener('click', resetMineral);
+            document.getElementById('change-mineral').addEventListener('click', changeMineral);
+            document.getElementById('toggle-cleavage').addEventListener('click', toggleCleavagePlanes);
+            document.getElementById('toggle-habit').addEventListener('click', toggleHabitOutline);
+            document.getElementById('toggle-atomic').addEventListener('click', toggleAtomicStructure);
+            document.getElementById('next-step').addEventListener('click', nextStep);
+            document.getElementById('prev-step').addEventListener('click', previousStep);
+            document.getElementById('next-quiz').addEventListener('click', nextQuizQuestion);
+
+            // Keyboard controls
+            document.addEventListener('keydown', (event) => {
+                switch(event.code) {
+                    case 'Space':
+                        event.preventDefault();
+                        breakMineral();
+                        break;
+                    case 'KeyR':
+                        resetMineral();
+                        break;
+                    case 'KeyH':
+                        toggleHabitOutline();
+                        break;
+                    case 'KeyC':
+                        toggleCleavagePlanes();
+                        break;
+                    case 'KeyA':
+                        toggleAtomicStructure();
+                        break;
+                    case 'ArrowLeft':
+                        if (event.altKey) {
+                            event.preventDefault();
+                            previousStep();
+                        }
+                        break;
+                    case 'ArrowRight':
+                        if (event.altKey) {
+                            event.preventDefault();
+                            nextStep();
+                        }
+                        break;
+                }
+            });
+
+            // Quiz event listeners
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', handleQuizAnswer);
+            });
+
+            // Window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function handleQuizAnswer(event) {
+            const option = event.target;
+            const questionElement = option.closest('.quiz-question');
+            const questionId = questionElement.id;
+            const questionIndex = parseInt(questionId.split('-')[1]) - 1;
+
+            // Prevent multiple answers for the same question
+            if (quizAnswered[questionIndex]) return;
+
+            const isCorrect = option.dataset.answer === 'correct';
+
+            // Remove previous selections for this question
+            questionElement.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            // Add appropriate class
+            option.classList.add('selected');
+            option.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+            // Show correct answer
+            questionElement.querySelector('[data-answer="correct"]').classList.add('correct');
+
+            // Show feedback
+            const feedbackElement = questionElement.querySelector('.quiz-feedback');
+            feedbackElement.style.display = 'block';
+
+            if (isCorrect) {
+                feedbackElement.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+                feedbackElement.style.borderLeft = '4px solid #4caf50';
+                feedbackElement.textContent = '✅ Correct! ' + getQuestionFeedback(questionIndex, true);
+                quizScore++;
+            } else {
+                feedbackElement.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
+                feedbackElement.style.borderLeft = '4px solid #f44336';
+                feedbackElement.textContent = '❌ Incorrect. ' + getQuestionFeedback(questionIndex, false);
+            }
+
+            // Mark question as answered
+            quizAnswered[questionIndex] = true;
+            updateScoreDisplay();
+
+            // Show next question button or complete quiz
+            if (currentQuiz < 3) {
+                document.getElementById('next-quiz').style.display = 'inline-block';
+            } else {
+                setTimeout(() => {
+                    nextQuizQuestion();
+                }, 2000);
+            }
+        }
+
+        function getQuestionFeedback(questionIndex, isCorrect) {
+            const feedback = [
+                {
+                    correct: "Cleavage is determined by the arrangement of atoms in the crystal structure.",
+                    incorrect: "Cleavage is controlled by atomic structure, while crystal habit depends on growth conditions."
+                },
+                {
+                    correct: "Perfect cleavage in one direction creates flat, sheet-like fragments, typical of mica.",
+                    incorrect: "Thin, flat sheets indicate perfect cleavage in one direction, like in mica minerals."
+                },
+                {
+                    correct: "Quartz lacks cleavage planes and instead shows conchoidal (curved) fracture surfaces.",
+                    incorrect: "Quartz has no cleavage - it fractures in curved patterns rather than along flat planes."
+                }
+            ];
+
+            return feedback[questionIndex] ? feedback[questionIndex][isCorrect ? 'correct' : 'incorrect'] : '';
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Animate fragments if broken
+            if (isBroken && mineralFragments.length > 0) {
+                animateFragments();
+            }
+
+            // Animate habit outline pulsing effect
+            if (habitOutline && showHabitOutline) {
+                habitOutline.userData.pulsePhase += 0.02;
+                const pulseValue = Math.sin(habitOutline.userData.pulsePhase) * 0.3 + 0.7;
+                habitOutline.material.opacity = habitOutline.userData.originalOpacity * pulseValue;
+            }
+
+            // Animate atomic structure
+            if (atomicStructure && showAtomicStructure) {
+                // Gentle rotation of atomic structure
+                atomicStructure.rotation.y += 0.005;
+
+                // Animate weak bonds (make them pulse)
+                atomicBonds.forEach(bond => {
+                    if (bond.userData.strength === 'weak') {
+                        const time = Date.now() * 0.002;
+                        bond.material.opacity = 0.3 + Math.sin(time) * 0.3;
+                    }
+                });
+
+                // Make atoms glow slightly
+                atomicAtoms.forEach((atom, index) => {
+                    const time = Date.now() * 0.001 + index * 0.1;
+                    const glowIntensity = 0.8 + Math.sin(time) * 0.2;
+                    atom.material.opacity = glowIntensity;
+                });
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
