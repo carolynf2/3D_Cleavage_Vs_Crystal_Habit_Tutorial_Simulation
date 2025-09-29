@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluorite: Crystal Formation vs. Fracture Process</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .process-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .crystal-container {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+            perspective: 1000px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .crystal {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(20deg) rotateY(45deg);
+            transform-style: preserve-3d;
+        }
+
+        .crystal-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #00ffff;
+            background: linear-gradient(45deg,
+                rgba(0,255,255,0.3) 0%,
+                rgba(128,0,255,0.3) 50%,
+                rgba(255,0,128,0.3) 100%);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Crystal faces for cubic fluorite */
+        .face-front {
+            transform: translateZ(100px);
+            background: linear-gradient(45deg, rgba(255,0,255,0.4), rgba(0,255,255,0.4));
+        }
+        .face-back {
+            transform: translateZ(-100px) rotateY(180deg);
+            background: linear-gradient(45deg, rgba(0,255,255,0.4), rgba(255,255,0,0.4));
+        }
+        .face-right {
+            transform: rotateY(90deg) translateZ(100px);
+            background: linear-gradient(45deg, rgba(255,255,0,0.4), rgba(255,0,255,0.4));
+        }
+        .face-left {
+            transform: rotateY(-90deg) translateZ(100px);
+            background: linear-gradient(45deg, rgba(0,255,255,0.4), rgba(255,0,255,0.4));
+        }
+        .face-top {
+            transform: rotateX(90deg) translateZ(100px);
+            background: linear-gradient(45deg, rgba(255,0,255,0.4), rgba(255,255,0,0.4));
+        }
+        .face-bottom {
+            transform: rotateX(-90deg) translateZ(100px);
+            background: linear-gradient(45deg, rgba(255,255,0,0.4), rgba(0,255,255,0.4));
+        }
+
+        .cleavage-plane {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+            border: 2px dashed #ffff00;
+            background: rgba(255,255,0,0.1);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .cleavage-1 { transform: rotateX(45deg) rotateY(45deg); }
+        .cleavage-2 { transform: rotateX(-45deg) rotateY(45deg); }
+        .cleavage-3 { transform: rotateX(45deg) rotateY(-45deg); }
+        .cleavage-4 { transform: rotateX(-45deg) rotateY(-45deg); }
+
+        .show-cleavage .cleavage-plane {
+            opacity: 0.7;
+        }
+
+        .fracture-pieces {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+        }
+
+        .piece {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, rgba(0,255,255,0.6), rgba(255,0,255,0.6));
+            border: 2px solid #00ffff;
+            opacity: 0;
+            transform-style: preserve-3d;
+            transition: all 1s ease;
+        }
+
+        .piece-1 { top: 0; left: 0; }
+        .piece-2 { top: 0; right: 0; }
+        .piece-3 { bottom: 0; left: 0; }
+        .piece-4 { bottom: 0; right: 0; }
+        .piece-5 { top: 40px; left: 60px; width: 60px; height: 60px; }
+        .piece-6 { top: 60px; left: 40px; width: 60px; height: 60px; }
+        .piece-7 { top: 20px; left: 20px; width: 40px; height: 40px; }
+        .piece-8 { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+
+        .fractured .piece {
+            opacity: 1;
+        }
+
+        .fractured .piece-1 { transform: translate(-30px, -30px) rotateX(15deg) rotateY(-15deg); }
+        .fractured .piece-2 { transform: translate(30px, -30px) rotateX(15deg) rotateY(15deg); }
+        .fractured .piece-3 { transform: translate(-30px, 30px) rotateX(-15deg) rotateY(-15deg); }
+        .fractured .piece-4 { transform: translate(30px, 30px) rotateX(-15deg) rotateY(15deg); }
+        .fractured .piece-5 { transform: translate(-10px, -20px) rotateX(10deg); }
+        .fractured .piece-6 { transform: translate(10px, 20px) rotateX(-10deg); }
+        .fractured .piece-7 { transform: translate(-20px, -10px) rotateY(-20deg); }
+        .fractured .piece-8 { transform: translate(20px, 10px) rotateY(20deg); }
+
+        .controls {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.3);
+            margin-top: 40px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .btn.active {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+        }
+
+        .process-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .formation-stages {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .stage {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #00ffff, #0080ff);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.8s ease;
+        }
+
+        .growing .stage {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .stage-1 { top: 50%; left: 50%; animation-delay: 0s; }
+        .stage-2 { top: 40%; left: 60%; animation-delay: 0.2s; }
+        .stage-3 { top: 60%; left: 40%; animation-delay: 0.4s; }
+        .stage-4 { top: 30%; left: 30%; animation-delay: 0.6s; }
+        .stage-5 { top: 70%; left: 70%; animation-delay: 0.8s; }
+        .stage-6 { top: 20%; left: 50%; animation-delay: 1.0s; }
+        .stage-7 { top: 80%; left: 50%; animation-delay: 1.2s; }
+        .stage-8 { top: 50%; left: 20%; animation-delay: 1.4s; }
+        .stage-9 { top: 50%; left: 80%; animation-delay: 1.6s; }
+
+        @keyframes crystalGrow {
+            0% { transform: translate(-50%, -50%) scale(0) rotateX(20deg) rotateY(45deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotateX(20deg) rotateY(45deg); }
+        }
+
+        .growing .crystal {
+            animation: crystalGrow 2s ease-out;
+        }
+
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotateX(20deg) rotateY(45deg); }
+            100% { transform: translate(-50%, -50%) rotateX(20deg) rotateY(405deg); }
+        }
+
+        .rotating .crystal {
+            animation: rotate 4s linear infinite;
+        }
+
+        .info-panel {
+            grid-column: 1 / -1;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .figure-reference {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .scientific-explanation {
+            columns: 2;
+            column-gap: 30px;
+            text-align: justify;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💎 Fluorite Crystal Dynamics</h1>
+        <div class="subtitle">Formation vs. Fracture Process Animation</div>
+        <div class="figure-reference">Based on Figure 2.6.6: Crystal faces and cleavage planes in the mineral fluorite</div>
+    </div>
+
+    <div class="main-container">
+        <!-- Crystal Formation Section -->
+        <div class="process-section">
+            <h2 class="section-title">🌱 Crystal Formation</h2>
+            <div class="crystal-container" id="formationContainer">
+                <div class="formation-stages">
+                    <div class="stage stage-1"></div>
+                    <div class="stage stage-2"></div>
+                    <div class="stage stage-3"></div>
+                    <div class="stage stage-4"></div>
+                    <div class="stage stage-5"></div>
+                    <div class="stage stage-6"></div>
+                    <div class="stage stage-7"></div>
+                    <div class="stage stage-8"></div>
+                    <div class="stage stage-9"></div>
+                </div>
+                <div class="crystal" id="formationCrystal">
+                    <div class="crystal-face face-front"></div>
+                    <div class="crystal-face face-back"></div>
+                    <div class="crystal-face face-right"></div>
+                    <div class="crystal-face face-left"></div>
+                    <div class="crystal-face face-top"></div>
+                    <div class="crystal-face face-bottom"></div>
+                </div>
+            </div>
+            <div class="process-info">
+                <strong>Natural Crystal Growth:</strong><br>
+                • Atoms arrange in orderly 3D lattice<br>
+                • Cubic crystal system (isometric)<br>
+                • Perfect crystal faces develop<br>
+                • Internal cleavage planes form<br>
+                • Fluorine and calcium ions bond
+            </div>
+        </div>
+
+        <!-- Fracture Process Section -->
+        <div class="process-section">
+            <h2 class="section-title">💥 Fracture Process</h2>
+            <div class="crystal-container" id="fractureContainer">
+                <div class="crystal" id="fractureCrystal">
+                    <div class="crystal-face face-front"></div>
+                    <div class="crystal-face face-back"></div>
+                    <div class="crystal-face face-right"></div>
+                    <div class="crystal-face face-left"></div>
+                    <div class="crystal-face face-top"></div>
+                    <div class="crystal-face face-bottom"></div>
+                    <div class="cleavage-plane cleavage-1"></div>
+                    <div class="cleavage-plane cleavage-2"></div>
+                    <div class="cleavage-plane cleavage-3"></div>
+                    <div class="cleavage-plane cleavage-4"></div>
+                </div>
+                <div class="fracture-pieces" id="fracturePieces">
+                    <div class="piece piece-1"></div>
+                    <div class="piece piece-2"></div>
+                    <div class="piece piece-3"></div>
+                    <div class="piece piece-4"></div>
+                    <div class="piece piece-5"></div>
+                    <div class="piece piece-6"></div>
+                    <div class="piece piece-7"></div>
+                    <div class="piece piece-8"></div>
+                </div>
+            </div>
+            <div class="process-info">
+                <strong>Controlled Fracture:</strong><br>
+                • Breaks along cleavage planes<br>
+                • Four perfect cleavage directions<br>
+                • Produces octahedral fragments<br>
+                • Clean, flat fracture surfaces<br>
+                • Maintains crystal structure
+            </div>
+        </div>
+
+        <!-- Information Panel -->
+        <div class="info-panel">
+            <h3 style="text-align: center; margin-bottom: 20px; color: #ffd700;">Scientific Background</h3>
+            <div class="scientific-explanation">
+                <p><strong>Fluorite (CaF₂)</strong> crystallizes in the cubic (isometric) crystal system, forming beautiful octahedral and cubic crystals. The mineral exhibits perfect cleavage in four directions parallel to the octahedral faces, which means it breaks along specific crystallographic planes that reflect the internal atomic arrangement.</p>
+
+                <p>During <strong>crystal formation</strong>, calcium and fluoride ions arrange themselves in a highly ordered three-dimensional lattice structure. This process occurs slowly in hydrothermal environments, allowing the crystal faces to develop perfectly flat surfaces that reflect the underlying atomic geometry.</p>
+
+                <p>The <strong>fracture process</strong> takes advantage of fluorite's perfect octahedral cleavage. When stress is applied carefully along these natural weak planes, the crystal splits cleanly, producing smaller fragments that maintain the same crystallographic orientation as the original crystal.</p>
+
+                <p>Figure 2.6.6 demonstrates this principle by showing a natural fluorite crystal with visible internal cleavage planes, and the resulting octahedral fragments produced when the crystal is broken along these predetermined planes. This property makes fluorite valuable for optical applications and as a teaching tool for understanding crystal structure.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="animateFormation()">🌱 Show Formation</button>
+        <button class="btn" onclick="showCleavagePlanes()">📐 Show Cleavage Planes</button>
+        <button class="btn" onclick="animateFracture()">💥 Fracture Crystal</button>
+        <button class="btn" onclick="resetAnimation()">🔄 Reset</button>
+        <button class="btn" onclick="continuousRotation()">🔄 Rotate View</button>
+    </div>
+
+    <script>
+        let isRotating = false;
+        let formationActive = false;
+        let fractureActive = false;
+
+        function animateFormation() {
+            resetAnimation();
+            formationActive = true;
+
+            const container = document.getElementById('formationContainer');
+            container.classList.add('growing');
+
+            setTimeout(() => {
+                container.classList.add('rotating');
+            }, 2000);
+
+            // Update button state
+            updateButtonStates('formation');
+        }
+
+        function showCleavagePlanes() {
+            const crystal = document.getElementById('fractureCrystal');
+            crystal.parentElement.classList.add('show-cleavage');
+
+            setTimeout(() => {
+                crystal.parentElement.classList.remove('show-cleavage');
+            }, 3000);
+
+            updateButtonStates('cleavage');
+        }
+
+        function animateFracture() {
+            resetAnimation();
+            fractureActive = true;
+
+            const container = document.getElementById('fractureContainer');
+
+            // First show cleavage planes
+            container.classList.add('show-cleavage');
+
+            setTimeout(() => {
+                // Then fracture
+                container.classList.add('fractured');
+                document.getElementById('fracturePieces').classList.add('fractured');
+            }, 1500);
+
+            updateButtonStates('fracture');
+        }
+
+        function resetAnimation() {
+            // Reset formation
+            const formationContainer = document.getElementById('formationContainer');
+            formationContainer.classList.remove('growing', 'rotating');
+
+            // Reset fracture
+            const fractureContainer = document.getElementById('fractureContainer');
+            fractureContainer.classList.remove('show-cleavage', 'fractured');
+            document.getElementById('fracturePieces').classList.remove('fractured');
+
+            formationActive = false;
+            fractureActive = false;
+            updateButtonStates('reset');
+        }
+
+        function continuousRotation() {
+            isRotating = !isRotating;
+
+            if (isRotating) {
+                document.getElementById('formationCrystal').style.animation = 'rotate 4s linear infinite';
+                document.getElementById('fractureCrystal').style.animation = 'rotate 4s linear infinite';
+            } else {
+                document.getElementById('formationCrystal').style.animation = '';
+                document.getElementById('fractureCrystal').style.animation = '';
+            }
+
+            updateButtonStates('rotate');
+        }
+
+        function updateButtonStates(active) {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            if (active === 'formation') {
+                buttons[0].classList.add('active');
+            } else if (active === 'cleavage') {
+                buttons[1].classList.add('active');
+            } else if (active === 'fracture') {
+                buttons[2].classList.add('active');
+            } else if (active === 'rotate') {
+                buttons[4].classList.add('active');
+            }
+        }
+
+        // Auto-start with formation animation
+        setTimeout(() => {
+            animateFormation();
+        }, 1000);
+
+        // Add particle effects
+        function createParticles() {
+            const container = document.querySelector('.main-container');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '3px';
+                particle.style.height = '3px';
+                particle.style.background = '#00ffff';
+                particle.style.borderRadius = '50%';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${3 + Math.random() * 4}s ease-in-out infinite`;
+                container.appendChild(particle);
+            }
+        }
+
+        // Add floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+                50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        createParticles();
+    </script>
+</body>
+</html>
